@@ -9,6 +9,7 @@
   "author": "ABHINAV KUMAR",
   "license": "ISC",
   "dependencies": {
+    "bullmq": "^5.4.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.1",
     "express": "^4.18.2",
