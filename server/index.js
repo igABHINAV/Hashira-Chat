@@ -10,7 +10,7 @@ const { handleJoinRoom, handleLeaveRoom } = require("./controller/roomController
 
 const { availableParallelism } = require("node:os");
 const cluster = require("node:cluster");
-const { createAdapter} = require('@socket.io/cluster-adapter');
+const { createAdapter , setupPrimary} = require('@socket.io/cluster-adapter');
 
 
 
@@ -32,11 +32,16 @@ if (cluster.isPrimary) {
 const pub = new Redis({
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
+    connectTimeout: 10000
+
+
 });
 
 const sub = new Redis({
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
+    connectTimeout: 10000
+
 });
 
 const server = http.createServer(app);
