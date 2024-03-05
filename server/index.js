@@ -1,4 +1,3 @@
-// main file
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -9,10 +8,24 @@ const app = express();
 const { handleMessage } = require("./controller/messageController");
 const { handleJoinRoom, handleLeaveRoom } = require("./controller/roomController");
 
+const { availableParallelism } = require("node:os");
+const cluster = require("node:cluster");
+const { createAdapter} = require('@socket.io/cluster-adapter');
 
-const { availableParallelism } = require('node:os');
-const cluster = require('node:cluster');
-const { createAdapter, setupPrimary } = require('@socket.io/cluster-adapter');
+
+
+if (cluster.isPrimary) {
+    const numCPUs = availableParallelism();
+    // create one worker per available core
+    for (let i = 0; i < numCPUs; i++) {
+        cluster.fork({
+            PORT: parseInt(process.env.PORT) 
+        });
+    }
+
+    // set up the adapter on the primary thread
+    return setupPrimary();
+}
 
 
 //Creating pub/sub and server
@@ -27,6 +40,8 @@ const sub = new Redis({
 });
 
 const server = http.createServer(app);
+
+
 const io = new Server(server, {
     cors: {
         methods: ["GET", "POST"],
@@ -35,13 +50,10 @@ const io = new Server(server, {
     adapter: createAdapter()
 });
 
-
 //middlewares
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
-
-
 
 //Websocket connection handlers
 io.on("connection", (socket) => {
@@ -51,28 +63,14 @@ io.on("connection", (socket) => {
     handleLeaveRoom(socket);
 });
 
-
-
 sub.on('message', (channel, message) => {
     console.log(`Received message on channel ${channel}: ${message}`);
 });
 
+const port = process.env.PORT;
+
+  server.listen(port, () => {
+    console.log(`server running at http://localhost:${port}`);
+  });
 
 
-if (cluster.isPrimary) {
-    const numCPUs = availableParallelism();
-    // create one worker per available core
-    for (let i = 0; i < numCPUs; i++) {
-        cluster.fork({
-            PORT: process.env.PORT + i
-        });
-    }
-
-    // set up the adapter on the primary thread
-    return setupPrimary();
-}
-
-
-server.listen(process.env.PORT, () => {
-    console.log(`server is running on port : ${process.env.PORT}`);
-});
