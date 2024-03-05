@@ -15,7 +15,7 @@ const Page = (props) => {
 
   return (
     <div>
-      <label>Message : </label>
+      <label >Message : </label>
       <input 
         placeholder='message' 
         type='text' 

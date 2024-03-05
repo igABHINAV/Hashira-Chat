@@ -37,7 +37,7 @@ const TestRoom = (props) => {
     };
 
     return (
-        <div>
+        <div >
             Hi testroom with name: {id}
             <button onClick={() => leaveRoom(id)}>Leave</button>
             <div>

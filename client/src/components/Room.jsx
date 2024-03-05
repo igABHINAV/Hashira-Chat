@@ -12,10 +12,11 @@ const Room = (props) => {
     navigate(`/room/${room}`);
   };
 
-  
+
 
   return (
     <div>
+      
       <input type='text' placeholder='Enter your room name' value={room} onChange={(e) => setRoom(e.target.value)} /> {/* Corrected to setRoom instead of setroom */}
       <button onClick={joinRoom}>Enter</button>
     </div>

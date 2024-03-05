@@ -3,14 +3,19 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { io } from 'socket.io-client';
 import TestRoom from "./components/TestRoom";
 import Room from "./components/Room";
+import "../node_modules/bootstrap/dist/css/bootstrap.min.css"
 
-const socket = io("http://localhost:5000");
+
+const socket = io('http://localhost:5000');
 function App() {
 
 
   return (
     <>
       <BrowserRouter>
+      <h1 className="container">
+      Hello world!
+    </h1>
         <Routes>
 
           <Route path="/page" element={<Page socket={socket} />} />
